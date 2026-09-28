@@ -1,15 +1,16 @@
-// 1. Импортируем модули Firebase напрямую через CDN
+// Импортируем модули Firebase напрямую через CDN
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
-// 2. Сюда нужно будет вставить твои настройки из Firebase (см. инструкцию ниже)
+// Твои настройки из Firebase
 const firebaseConfig = {
-    apiKey: "ТВОЙ_API_KEY",
-    authDomain: "твой-проект.firebaseapp.com",
-    projectId: "твой-проект",
-    storageBucket: "твой-проект.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123456789:web:abcdef"
+    apiKey: "AIzaSyCkg-3Boc0rkRHEc1ZHcdGc3ih4pE0Zyos",
+    authDomain: "coffeeportfolio-160a7.firebaseapp.com",
+    projectId: "coffeeportfolio-160a7",
+    storageBucket: "coffeeportfolio-160a7.firebasestorage.app",
+    messagingSenderId: "463097421957",
+    appId: "1:463097421957:web:9db7ccc6eab7ace8d8c9ec",
+    measurementId: "G-QCJ496WQ4E"
 };
 
 // Инициализируем базу данных
@@ -45,7 +46,7 @@ const calculatePrice = () => {
     }, 150);
 };
 
-// 3. ГЛАВНОЕ: Функция проверки наличия в Базе Данных
+// ГЛАВНОЕ: Функция проверки наличия в Базе Данных
 async function checkInventory() {
     try {
         console.log("Загрузка данных из БД...");
