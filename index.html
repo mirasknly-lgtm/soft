@@ -3,96 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blend & Brew | Кастомный кофе</title>
+    <title>Blend & Brew | Меню</title>
     <link rel="stylesheet" href="style.css">
     <script type="module" src="script.js"></script>
 </head>
 <body>
     <nav class="navbar">
         <div class="logo">Blend & Brew.</div>
-        <div class="cart-icon">🛒 Корзина (<span id="cart-count">0</span>)</div>
+        <div class="cart-btn" id="cart-open">
+            🛒 Корзина (<span id="cart-count">0</span>)
+        </div>
     </nav>
 
-    <main class="product-container">
-        <!-- Левая часть: Изображение товара -->
-        <div class="product-image">
-            <img src="https://images.unsplash.com/photo-1559525839-b184a4d698c7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Пакет крафтового кофе">
+    <div class="cart-overlay" id="cart-overlay"></div>
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h2>Ваш заказ</h2>
+            <button class="close-cart" id="cart-close">×</button>
         </div>
-
-        <!-- Правая часть: Интерактивный конфигуратор -->
-        <div class="configurator">
-            <span class="badge">Свежая обжарка</span>
-            <h1>Собери свой идеальный кофе</h1>
-            <p class="description">Выберите сорт, обжарку и помол. Мы обжарим зерна специально для вас и отправим в день заказа.</p>
-
-            <form id="coffee-form">
-                <!-- Шаг 1: Выбор сорта -->
-                <div class="config-step">
-                    <h3>1. Выберите сорт зерна</h3>
-                    <div class="options-grid">
-                        <label class="option">
-                            <input type="radio" name="bean" value="arabica" data-price="4500" checked>
-                            <span class="option-content">100% Арабика</span>
-                        </label>
-                        <label class="option">
-                            <input type="radio" name="bean" value="blend" data-price="4000">
-                            <span class="option-content">Фирменный Бленд</span>
-                        </label>
-                        <label class="option">
-                            <input type="radio" name="bean" value="ethiopia" data-price="5500">
-                            <span class="option-content">Эфиопия (Премиум)</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Шаг 2: Обжарка -->
-                <div class="config-step">
-                    <h3>2. Степень обжарки</h3>
-                    <div class="options-grid">
-                        <label class="option">
-                            <input type="radio" name="roast" value="light" checked>
-                            <span class="option-content">Светлая (Фильтр)</span>
-                        </label>
-                        <label class="option">
-                            <input type="radio" name="roast" value="medium">
-                            <span class="option-content">Средняя (Эспрессо)</span>
-                        </label>
-                        <label class="option">
-                            <input type="radio" name="roast" value="dark">
-                            <span class="option-content">Темная (Турка)</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Шаг 3: Вес (влияет на множитель цены) -->
-                <div class="config-step">
-                    <h3>3. Вес упаковки</h3>
-                    <div class="options-grid">
-                        <label class="option">
-                            <input type="radio" name="weight" value="250" data-multiplier="1" checked>
-                            <span class="option-content">250 г</span>
-                        </label>
-                        <label class="option">
-                            <input type="radio" name="weight" value="500" data-multiplier="1.9">
-                            <span class="option-content">500 г (-5%)</span>
-                        </label>
-                        <label class="option">
-                            <input type="radio" name="weight" value="1000" data-multiplier="3.6">
-                            <span class="option-content">1 кг (-10%)</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Итоговая цена и кнопка -->
-                <div class="checkout-section">
-                    <div class="price-display">
-                        <span>Итого:</span>
-                        <h2 id="total-price">4 500 ₸</h2>
-                    </div>
-                    <button type="submit" class="btn-primary" id="add-to-cart">Добавить в корзину</button>
-                </div>
-            </form>
+        <div class="cart-items" id="cart-items">
+            <p class="empty-cart">Ваша корзина пуста</p>
         </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Итого:</span>
+                <strong id="cart-total-price">0 ₸</strong>
+            </div>
+            <button class="btn-primary checkout-btn" onclick="alert('Переход к оплате!')">Оформить заказ</button>
+        </div>
+    </div>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Идеальный кофе и десерты</h1>
+            <p>Свежая обжарка и выпечка с доставкой до вашей двери</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <h2 class="section-title">Наше меню</h2>
+        <div class="catalog-grid" id="catalog"></div>
     </main>
 </body>
 </html>
