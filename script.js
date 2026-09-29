@@ -1,12 +1,20 @@
-const products = [
-    { id: 1, name: "Эфиопия Иргачеффе", desc: "Светлая обжарка. Ноты: бергамот, жасмин, персик.", price: 5500, img: "https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&w=600&q=80" },
-    { id: 2, name: "Фирменный Бленд", desc: "Средняя обжарка. Идеально для эспрессо и капучино.", price: 4000, img: "https://images.unsplash.com/photo-1587734195503-904fca47e0e9?auto=format&fit=crop&w=600&q=80" },
-    { id: 3, name: "Колумбия Супремо", desc: "Темная обжарка. Насыщенный вкус с нотами темного шоколада.", price: 4500, img: "https://images.unsplash.com/photo-1554497676-e2659e51c86d?auto=format&fit=crop&w=600&q=80" },
-    { id: 4, name: "Миндальный Круассан", desc: "Свежая выпечка с нежным миндальным кремом.", price: 1200, img: "https://images.unsplash.com/photo-1549903072-7e6e0d6594b4?auto=format&fit=crop&w=600&q=80" },
-    { id: 5, name: "Сет Макарун (5 шт)", desc: "Французские десерты. Фисташка, малина, ваниль.", price: 3500, img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?auto=format&fit=crop&w=600&q=80" },
-    { id: 6, name: "Чизкейк Нью-Йорк", desc: "Классический сливочный десерт на песочной основе.", price: 1800, img: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=600&q=80" }
-];
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
+// Твои настройки Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyCkg-3Boc0rkRHEc1ZHcdGc3ih4pE0Zyos",
+    authDomain: "coffeeportfolio-160a7.firebaseapp.com",
+    projectId: "coffeeportfolio-160a7",
+    storageBucket: "coffeeportfolio-160a7.firebasestorage.app",
+    messagingSenderId: "463097421957",
+    appId: "1:463097421957:web:9db7ccc6eab7ace8d8c9ec"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let products = [];
 let cart = [];
 
 const catalogContainer = document.getElementById('catalog');
@@ -14,7 +22,34 @@ const cartItemsContainer = document.getElementById('cart-items');
 const cartCountElement = document.getElementById('cart-count');
 const cartTotalPrice = document.getElementById('cart-total-price');
 
+// Функция загрузки товаров из Firebase
+async function loadProducts() {
+    catalogContainer.innerHTML = '<p style="text-align:center; width:100%; grid-column: 1 / -1;">Загрузка меню из базы данных...</p>';
+    
+    try {
+        const querySnapshot = await getDocs(collection(db, "products"));
+        products = [];
+        
+        querySnapshot.forEach((doc) => {
+            // Собираем данные и добавляем уникальный ID документа
+            products.push({ id: doc.id, ...doc.data() });
+        });
+
+        if (products.length === 0) {
+            catalogContainer.innerHTML = '<p style="text-align:center; width:100%; grid-column: 1 / -1;">Каталог пуст. Добавьте товары в Firebase.</p>';
+            return;
+        }
+
+        renderCatalog();
+    } catch (error) {
+        console.error("Ошибка загрузки:", error);
+        catalogContainer.innerHTML = '<p style="text-align:center; width:100%; grid-column: 1 / -1; color:red;">Ошибка подключения к базе данных.</p>';
+    }
+}
+
+// Отрисовка каталога
 function renderCatalog() {
+    catalogContainer.innerHTML = '';
     products.forEach(product => {
         const card = document.createElement('div');
         card.className = 'product-card';
@@ -27,7 +62,7 @@ function renderCatalog() {
                 <p class="product-desc">${product.desc}</p>
                 <div class="product-bottom">
                     <span class="product-price">${new Intl.NumberFormat('ru-RU').format(product.price)} ₸</span>
-                    <button class="btn-add" onclick="addToCart(${product.id})">В корзину</button>
+                    <button class="btn-add" onclick="addToCart('${product.id}')">В корзину</button>
                 </div>
             </div>
         `;
@@ -35,6 +70,70 @@ function renderCatalog() {
     });
 }
 
+// Добавление в корзину (используем строковый ID из Firebase)
+window.addToCart = function(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    
+    cart.push(product);
+    
+    const cartBtn = document.getElementById('cart-open');
+    cartBtn.style.transform = 'scale(1.1)';
+    setTimeout(() => cartBtn.style.transform = 'scale(1)', 200);
+
+    updateCartUI();
+}
+
+// Удаление из корзины
+window.removeFromCart = function(index) {
+    cart.splice(index, 1);
+    updateCartUI();
+}
+
+// Обновление интерфейса корзины
+function updateCartUI() {
+    cartCountElement.textContent = cart.length;
+    cartItemsContainer.innerHTML = '';
+    
+    if (cart.length === 0) {
+        cartItemsContainer.innerHTML = '<p class="empty-cart">Ваша корзина пуста</p>';
+        cartTotalPrice.textContent = '0 ₸';
+        return;
+    }
+
+    let total = 0;
+    cart.forEach((item, index) => {
+        total += item.price;
+        const cartItem = document.createElement('div');
+        cartItem.className = 'cart-item';
+        cartItem.innerHTML = `
+            <div class="cart-item-info">
+                <h4>${item.name}</h4>
+                <p>${new Intl.NumberFormat('ru-RU').format(item.price)} ₸</p>
+            </div>
+            <button class="cart-item-remove" onclick="removeFromCart(${index})">✕</button>
+        `;
+        cartItemsContainer.appendChild(cartItem);
+    });
+
+    cartTotalPrice.textContent = new Intl.NumberFormat('ru-RU').format(total) + ' ₸';
+}
+
+// Управление шторкой корзины
+const cartOpenBtn = document.getElementById('cart-open');
+const cartCloseBtn = document.getElementById('cart-close');
+const cartOverlay = document.getElementById('cart-overlay');
+
+function toggleCart() {
+    document.body.classList.toggle('cart-active');
+}
+
+cartOpenBtn.addEventListener('click', toggleCart);
+cartCloseBtn.addEventListener('click', toggleCart);
+cartOverlay.addEventListener('click', toggleCart);
+
+// Запускаем загрузку данных при открытии сайта
+loadProducts();
 window.addToCart = function(productId) {
     const product = products.find(p => p.id === productId);
     cart.push(product);
